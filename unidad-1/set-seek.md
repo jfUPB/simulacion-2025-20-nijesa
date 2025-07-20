@@ -145,7 +145,6 @@ step() {
 Una vez has entendido el concepto de distribución normal, vas a pensar en una nueva manera de visualizarlo.
 
 #### - Crea un nuevo sketch en p5.js que represente una distribución normal.
-
 #### - Copia el código en tu bitácora.
 ```js
 let xCounts = {}; 
@@ -232,5 +231,163 @@ La idea del codigo la hice yo, empecé programandolo solo y cuando tenia dudas s
 https://editor.p5js.org/nijesa/sketches/dFp4etSzu
 #### - Selecciona una captura de pantalla de tu sketch y colócala en tu bitácora.
 <img width="497" height="497" alt="image" src="https://github.com/user-attachments/assets/c1d6f850-eb85-49a3-93fa-675c1737a6d8" />
+
+
+### Actividad 6
+#### - Crea un nuevo sketch en p5.js donde modifiques uno de los ejemplos anteriores y adiciones de Lévy flight.
+#### - Explica por qué usaste esta técnica y qué resultados esberabas obtener.
+La use porque queria tener una aleatoriedad mas controlada en el eje y, ya que no me gustó mucho como fue implementado en el codigo original, esperaba poder controlarlo más y si fue mucho más controlado, ya que cuando la probabilidad que suba o baje es mucho más controlable
+#### - Copia el código en tu bitácora.
+```js
+// The Nature of Code
+// Daniel Shiffman
+// http://natureofcode.com
+
+let walker;
+let colorGen;
+
+function setup() {
+  createCanvas(640, 240);
+  walker = new Walker();
+  colorGen = new colorin();
+  
+  background(255);
+}
+
+function draw() {
+ const r = colorGen.rojo(walker.y / height);
+const g = colorGen.verde(walker.y / height);
+const b = colorGen.azul(walker.y / height);
+  stroke(r, g, b);
+  strokeWeight(4)
+  
+  walker.step();
+  walker.show();
+}
+
+class Walker {
+  constructor() {
+    this.x = width / 2;
+    this.y = height / 2;
+  }
+
+  show() {
+    point(this.x, this.y);
+  }
+
+  step() {
+
+    const choice = floor(randomGaussian(2));
+    if (choice == 1) {
+      this.x++;
+    } else if (choice == 2) 
+    {
+      this.x--;
+    } 
+    
+   let Number = qualifyNo();
+      console.log(Number)
+    if (Number>=0.54)
+      {
+        this.y--;
+      }
+      else if (Number<0.54)
+      {
+        this.y++;
+      }
+    else{}
+    
+    
+   
+    
+    
+    if (this.y >= height ||this.y <= 0 )
+    {
+     if(this.y>=height){this.y =0}
+      else{this.y = height}
+      
+    }
+    if (this.x >= width ||this.x <= 0 )
+    {
+      if(this.x>=width){this.x =0}
+      else{this.x = width}
+    }
+  }
+}
+
+class colorin {
+  rojo(y) {
+    if (y <= 0.30) {
+      return 245;
+    } else if (y > 0.30 && y <= 0.44) {
+      return 255;
+    } else if (y > 0.44 && y <= 0.58) {
+      return 255;
+    } else if (y > 0.58 && y <= 0.72) {
+      return 0;
+    } else if (y > 0.72 && y <= 0.86) {
+      return 2;
+    } else {
+      return 254;
+    }
+  }
+
+  verde(y) {
+    if (y <= 0.30) {
+      return 3;
+    } else if (y > 0.30 && y <= 0.44) {
+      return 110;
+    } else if (y > 0.44 && y <= 0.58) {
+      return 235;
+    } else if (y > 0.58 && y <= 0.72) {
+      return 202;
+    } else if (y > 0.72 && y <= 0.86) {
+      return 65;
+    } else {
+      return 0;
+    }
+  }
+
+  azul(y) {
+    if (y <= 0.30) {
+      return 0;
+    } else if (y > 0.30 && y <= 0.44) {
+      return 0;
+    } else if (y > 0.44 && y <= 0.58) {
+      return 1;
+    } else if (y > 0.58 && y <= 0.72) {
+      return 30;
+    } else if (y > 0.72 && y <= 0.86) {
+      return 254;
+    } else {
+      return 212;
+    }
+  }
+}
+
+function qualifyNo()
+{
+    let r1 = random(1);
+    let prob = r1;
+    let r2 = random(1);
+    
+    if(r2 <= prob){
+      return r1;
+    }
+}
+
+
+ //let rojo =(245, 3, 0);
+  //let naranja =(255, 110, 0);
+  //let amarillo =(255, 235, 1);
+  //let verde =(0, 202, 30);
+  //let azul =(2, 65, 254);
+  //let morao =(254, 0, 212);
+```
+#### - Coloca en enlace a tu sketch en p5.js en tu bitácora.
+https://editor.p5js.org/nijesa/sketches/I6SYqCYA1
+#### - Selecciona una captura de pantalla de tu sketch y colócala en tu bitácora.
+<img width="797" height="295" alt="image" src="https://github.com/user-attachments/assets/715d03ee-fb02-45bc-b92d-6c5702947e3e" />
+
 
 
