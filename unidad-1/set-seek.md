@@ -113,5 +113,43 @@ class Walker {
 
 ```
 #### - Antes de ejecutar el código, escribe en tu bitácora qué esperas que suceda.
+deberia moverse pocas veces para abajo, aumentar el tamaño del punto y cada frame pintar el punto de un color diferente, cuando llega al borde del canva vuelve al centro
 #### - Ejecuta el código y escribe en tu bitácora qué sucedió realmente.
+El punto se mueve mucho para abajo (-y), el tamaño del punto si cambia y es un poco mas grande que en el codigo original, cada frame cambia el color del punto
 #### - Ocurrió lo que esperabas? ¿Por qué crees que sí o por qué crees que no?
+Ocurrió lo que esperaba con todo, menos con el movimiento del punto, creí que poniendo dos numeros en un movimiento y en el ultimo solo un numero iba a ser un movimiento poco común
+
+### Actividad 4
+#### - En tus propias palabras cuál es la diferencia entre una distribución uniforme y una no uniforme de números aleatorios.
+En la distribución uniforme cada numero tiene la misma probabilidad de salir, mientras que una no uniforme de numero aleatorios los numeros que se acercan a la media salen mas  seguido a los que estan en los extermos, por ejemplo, entre 1y 3, que salga 2 es mas probable a que salga 1 o 3, porque esa es la media
+#### - Modifica el código de la caminata aleatoria para que utilice una distribución no uniforme, favoreciendo el movimiento hacia la derecha.
+```js
+step() {
+    const choice = floor(randomGaussian(10));
+    if (choice == 1 || choice == 2||choice == 9) {
+      this.x++;
+    } else if (choice == 4 || choice == 6 ) {
+      this.x--;
+    } else if (choice == 7 || choice == 5 ) {
+      this.y++;
+    } else {
+      this.y--;
+    }
+    
+    if (this.y >= height ||this.y <= 0 ){this.y=height/2}
+    if (this.x >= width ||this.x <= 0 ){this.y=width/2}
+  }
+```
+
+### Actividad 5
+Una vez has entendido el concepto de distribución normal, vas a pensar en una nueva manera de visualizarlo.
+
+#### - Crea un nuevo sketch en p5.js que represente una distribución normal.
+
+#### - Copia el código en tu bitácora.
+
+#### - Coloca en enlace a tu sketch en p5.js en tu bitácora.
+
+#### - Selecciona una captura de pantalla de tu sketch y colócala en tu bitácora.
+
+
