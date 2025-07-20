@@ -147,9 +147,90 @@ Una vez has entendido el concepto de distribución normal, vas a pensar en una n
 #### - Crea un nuevo sketch en p5.js que represente una distribución normal.
 
 #### - Copia el código en tu bitácora.
+```js
+let xCounts = {}; 
 
+function setup() {
+  createCanvas(400, 400);
+  background(220);
+  drawCartesianPlane();
+  frameRate(10);
+}
+
+function draw() {
+  
+  let val = round(randomGaussian());
+  val = constrain(val, -3, 3);
+
+  // Contar cuántas veces ha salido ese valor
+  if (xCounts[val] === undefined) {
+    xCounts[val] = 0;
+  }
+  xCounts[val] += 1;
+
+  // Convertir x a coordenadas de canvas
+  let xCanvas = map(val, -3, 3, 0, width);
+
+  // Usar la cantidad de apariciones para definir el valor Y en coordenadas matemáticas
+  let yMath = 1 + xCounts[val] * 0.1;
+
+  // Convertir yMath (0 a 10) a coordenadas de canvas
+  let yCanvas = map(yMath, 0, 10, height, 0);
+
+  // Dibujar el punto
+  noStroke();
+  fill(0, 50);
+  circle(xCanvas, yCanvas, 8);
+}
+
+function drawCartesianPlane() {
+  let xMin = -3;
+  let xMax = 3;
+  let yMin = 0;
+  let yMax = 10;
+
+  let yZeroVal = 1;
+  let yZero = map(yZeroVal, yMin, yMax, height, 0);
+  let xZero = map(0, xMin, xMax, 0, width);
+
+  stroke(0);
+  strokeWeight(2);
+
+  // Eje X
+  line(0, yZero, width, yZero);
+
+  // Eje Y
+  line(xZero, 0, xZero, height);
+
+  // Ticks y etiquetas
+  textAlign(CENTER, TOP);
+  fill(0);
+  noStroke();
+
+  for (let x = xMin; x <= xMax; x++) {
+    let px = map(x, xMin, xMax, 0, width);
+    stroke(0);
+    line(px, yZero - 5, px, yZero + 5);
+    noStroke();
+    text(x, px, yZero + 10);
+  }
+
+  textAlign(RIGHT, CENTER);
+  for (let y = yMin; y <= yMax; y++) {
+    let py = map(y, yMin, yMax, height, 0);
+    stroke(0);
+    line(xZero - 5, py, xZero + 5, py);
+    noStroke();
+    text(y, xZero - 10, py);
+  }
+}
+
+```
+La idea del codigo la hice yo, empecé programandolo solo y cuando tenia dudas se las preguntaba a chat gtp, finalmente organicé el codigo con chatgtp porque antes se veía muy raro
 #### - Coloca en enlace a tu sketch en p5.js en tu bitácora.
 
+https://editor.p5js.org/nijesa/sketches/dFp4etSzu
 #### - Selecciona una captura de pantalla de tu sketch y colócala en tu bitácora.
+<img width="497" height="497" alt="image" src="https://github.com/user-attachments/assets/c1d6f850-eb85-49a3-93fa-675c1737a6d8" />
 
 
