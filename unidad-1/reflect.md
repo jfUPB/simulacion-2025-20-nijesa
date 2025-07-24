@@ -32,3 +32,15 @@ Califiqué a Jacobo Rodriguez
 
 El trabajo esta muy brutal, tiene una buena interacción dejando al usuario hacer click en el lugar de inicio de las ramas y se ve muy bien visualmente como se van creando ramas poco a poco usando Lévy Flight, el walker el las curvas que hacen las ramas y el walker en el movimiento de cada rama, pero cuando se modifica la probabilidad de ramificar se pierden fps, de resto un muy buen trabajo, se evidencia el uso del noise(), walker y el Lévy flight durante la ramificacion y el movimiento de las ramas
 5/5
+
+### Act 11
+#### - Continuar: ¿Qué actividad, ejemplo o explicación de esta unidad te resultó más reveladora o útil para tu aprendizaje? ¿Qué deberíamos mantener sí o sí?
+la parte de perlin noise me pareció fundamental, me parece muy bonito todo lo que se puede hacer con eso
+#### - Dejar de hacer: ¿Hubo alguna actividad o concepto que te pareció redundante, confuso o menos útil? ¿Hay algo que eliminarías o cambiarías por completo?
+el randomGaussian() porque no le encuentro mucho uso o no se me ocurre que se puede hacer con el, ya que para la caminata aleatoria le da mucha monotonia al movimiento y no se ve tan organico
+#### - Empezar a hacer: ¿Qué te faltó en esta unidad? ¿Quizás más ejemplos de artistas, más desafíos técnicos, más teoría? ¿Qué idea tienes para hacerla mejor?
+me parece que un poco más de teoria sobre el ejemplo de las nubes con el perlin noise, me parece muy chevere esa parte y no entendí muy bien como logran hacer ese patron
+#### - Balance Teoría-Práctica: ¿Cómo sentiste el equilibrio entre analizar los ejemplos del texto guía y ponerte a programar tus propios sketches? Explica tu respuesta.
+me parece muy bien equilibrada, depronto dar un día más para entregar actividades
+#### - Comentario Adicional: ¿Hay algo más que quieras compartir sobre tu experiencia en esta unidad?
+me pareció una unidad chevere, me cogió el dia porque me distraia modificando codigos y experimentando con lo aprendido
