@@ -26,3 +26,9 @@ al principio tenia pensado en que las flores fueran de un solo color y se movier
 el control de parametros me parecio mas dificil, ya que al no tener mucha experiencia con js, no entiendo bien como se hacen arreglos, aveces programando uso metodos o pongo la firma completa de una variable/constante, pero me he ido acostumbrando a programar en este lenguaje de a poquitos
 ##### -  Si tuvieras que empezar la Actividad 08 de nuevo, ¿Qué harías de manera diferente basándote en lo que sabes ahora?
 me gustaria poner otra abeja y hacer que se mevan las flores un poco y vuelvan a su posicion original
+
+### ACt 10
+Califiqué a Jacobo Rodriguez
+
+El trabajo esta muy brutal, tiene una buena interacción dejando al usuario hacer click en el lugar de inicio de las ramas y se ve muy bien visualmente como se van creando ramas poco a poco usando Lévy Flight, el walker el las curvas que hacen las ramas y el walker en el movimiento de cada rama, pero cuando se modifica la probabilidad de ramificar se pierden fps, de resto un muy buen trabajo, se evidencia el uso del noise(), walker y el Lévy flight durante la ramificacion y el movimiento de las ramas
+5/5
