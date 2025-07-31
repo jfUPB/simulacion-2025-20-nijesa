@@ -157,3 +157,61 @@ dist() calcula la distancia entre dos vectores, sirve para proximidad, colisione
 normalize sirve para poner la magnitud de un vector en 1
 limit: le da limite a la magnitud de un vector, limit(5) la magnitud del vector no puede pasar de 5
 
+
+### Actividad 5
+```js
+let dV1 = true;
+let amt = 0;
+let c1, c2;
+function setup() {
+    createCanvas(500, 500);
+   c1 = color(255,0,0);
+   c2 = color(0,0,255);
+}
+
+
+function draw() {
+  background(200);
+
+  let amtC = map(amt, 0, 1, 0, 1);
+  let c = lerpColor(c1, c2, amtC);
+
+  let v0 = createVector(50, 50);
+  let v1 = createVector(250, 0);
+  let v2 = createVector(0, 250);
+  let v3 = p5.Vector.lerp(v1, v2, amt);
+  let v4 = p5.Vector.sub(v2, v1);
+
+  drawArrow(v0, v1, c1);       
+  drawArrow(v0, v2, c2);      
+  drawArrow(v0, v3, c);       
+  drawArrow(p5.Vector.add(v0, v1), v4, 'green');  
+  
+  if (dV1 == true) {
+    amt += 0.01;
+  } else {
+    amt -= 0.01;
+  }
+
+  if (amt >= 1) {
+    dV1 = false;
+  } else if (amt <= 0) {
+    dV1 = true;
+  }
+}
+
+
+function drawArrow(base, vec, myColor) {
+    push();
+    stroke(myColor);
+    strokeWeight(3);
+    fill(myColor);
+    translate(base.x, base.y);
+    line(0, 0, vec.x, vec.y);
+    rotate(vec.heading());
+    let arrowSize = 7;
+    translate(vec.mag() - arrowSize, 0);
+    triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+    pop();
+}
+```
