@@ -140,8 +140,11 @@ la más eficiente es la magSq() porque evita calcular la raiz cuadrada
 normalize() convierte un vector en uno de logitud 1 apuntano en la misma dirección, sirve para mantener la direccción de in vector pero eliminar su magnitud, sirve cuando solo se necesita saber la dirección
 
 #### Te encuentras con un periodista en la calle y te pregunta ¿Para qué sirve el método dot()? ¿Qué le responderías en un frase?
+le diria que sirve para saber el parecido entre la dirección de dos vectores
 
 #### El método dot() tiene una versión estática y una de instancia. ¿Cuál es la diferencia entre ambas?
+Instancia: se llama desde un objeto p5.vector, usando otro como argumento
+Estatico: se llama directamente desde la clase p5.vector
 
 #### Ahora el mismo periodista curioso de antes te pregunta si le puedes dar una intuición geométrica acerca del producto cruz. Entonces te pregunta ¿Cuál es la interpretación geométrica del producto cruz de dos vectores? Tu respuesta debe incluir qué pasa con la orientación y la magnitud del vector resultante.
 
