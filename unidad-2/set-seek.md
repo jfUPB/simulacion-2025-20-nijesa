@@ -137,7 +137,7 @@ Explora posibilidades
 El metodo mags() retorna la magnitud del vector, y magSq() retorna el cuadrado de la magnitud del vector, no la raiz cuadrada
 la más eficiente es la magSq() porque evita calcular la raiz cuadrada
 #### ¿Para qué sirve el método normalize()?
-
+normalize() convierte un vector en uno de logitud 1 apuntano en la misma dirección, sirve para mantener la direccción de in vector pero eliminar su magnitud, sirve cuando solo se necesita saber la dirección
 
 #### Te encuentras con un periodista en la calle y te pregunta ¿Para qué sirve el método dot()? ¿Qué le responderías en un frase?
 
