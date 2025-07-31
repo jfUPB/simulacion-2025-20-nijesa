@@ -129,4 +129,23 @@ Se está realizando paso por referencia, ya que p5.vector es un objeto
 - Esto significa que al modificar un vector dentro de una función, se afecta directamente el valor original fuera de esa función.
 - Esta característica es muy útil en simulaciones de movimiento, donde puedes actualizar la posición, velocidad, o aceleración de un objeto modificando sus vectores directamente.
 
+### Actividad 4
+
+Explora posibilidades
+
+#### ¿Para qué sirve el método mag()? Nota que hay otro método llamado magSq(). ¿Cuál es la diferencia entre ambos? ¿Cuál es más eficiente?
+El metodo mags() retorna la magnitud del vector, y magSq() retorna el cuadrado de la magnitud del vector, no la raiz cuadrada
+la más eficiente es la magSq() porque evita calcular la raiz cuadrada
+#### ¿Para qué sirve el método normalize()?
+
+
+#### Te encuentras con un periodista en la calle y te pregunta ¿Para qué sirve el método dot()? ¿Qué le responderías en un frase?
+
+#### El método dot() tiene una versión estática y una de instancia. ¿Cuál es la diferencia entre ambas?
+
+#### Ahora el mismo periodista curioso de antes te pregunta si le puedes dar una intuición geométrica acerca del producto cruz. Entonces te pregunta ¿Cuál es la interpretación geométrica del producto cruz de dos vectores? Tu respuesta debe incluir qué pasa con la orientación y la magnitud del vector resultante.
+
+#### ¿Para que te puede servir el método dist()?
+
+#### ¿Para qué sirven los métodos normalize() y limit()?
 
