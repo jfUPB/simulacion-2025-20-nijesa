@@ -147,8 +147,13 @@ Instancia: se llama desde un objeto p5.vector, usando otro como argumento
 Estatico: se llama directamente desde la clase p5.vector
 
 #### Ahora el mismo periodista curioso de antes te pregunta si le puedes dar una intuición geométrica acerca del producto cruz. Entonces te pregunta ¿Cuál es la interpretación geométrica del producto cruz de dos vectores? Tu respuesta debe incluir qué pasa con la orientación y la magnitud del vector resultante.
+La dirección resultante es perpendicular a ambos vectores, osea, si tiene un angulo de 0° y uno de 90°, el vector resultante seria de 45°. EN cuanto a la magnitud, esta seria el area de un paralelogramo formado por los dos vectores
 
 #### ¿Para que te puede servir el método dist()?
 
+dist() calcula la distancia entre dos vectores, sirve para proximidad, colisiones o seguir a un objetivo
+
 #### ¿Para qué sirven los métodos normalize() y limit()?
+normalize sirve para poner la magnitud de un vector en 1
+limit: le da limite a la magnitud de un vector, limit(5) la magnitud del vector no puede pasar de 5
 
