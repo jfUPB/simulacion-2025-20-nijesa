@@ -227,4 +227,95 @@ esta funcion dibuja una flecha desde un punto base con la longitud del vector, t
 ### Actividad 6
 ####  - Cuál es el concepto del marco motion 101 y cómo se interpreta geométricamente.
 
+es un modelo que sirve para simular el movimiento en el que un objeto con una posición, velocidad y opcionalmente aceleración, tiene estas caracteristicas representadas como vectores. Geometricamente la posición nos dice donde está el objeto, la velocidad la dirección y la rapidez, y la aceleración en cada fotograma.
+
 ####  - ¿Cómo se aplica motion 101 en el ejemplo?
+
+```js
+let mover;
+
+function setup() {
+  createCanvas(600, 400);
+  mover = new Mover();
+}
+
+function draw() {
+  background(220);
+
+  mover.update();
+  mover.dibujar();
+  mover.checkEdges();
+}
+
+class Mover {
+  constructor() {
+    this.position = createVector(width / 2, height / 2);
+    this.velocity = createVector(0, 0);
+    this.acceleration = createVector(0.2, -0.1+0.98); 
+  }
+
+  update() {
+    this.velocity.add(this.acceleration); 
+    this.position.add(this.velocity);     
+  }
+
+  dibujar() {
+    fill(50, 100, 200);
+    stroke(0);
+    ellipse(this.position.x, this.position.y, 32, 32);
+  }
+
+  checkEdges() {
+    if (this.position.x > width || this.position.x < 0) {
+      this.velocity.x *= -1;
+    }
+    if (this.position.y > height || this.position.y < 0) {
+      this.velocity.y *= -1;
+    }
+  }
+}
+
+```
+
+
+### Act 7
+Aceleración constante
+
+con la aceleración constante, el objeto comienza en reposo o con una VI, esta crece uniformemente con el tiempo, osea que si posición cambia cada vez más rapido
+Aceleración constante en la clase de la actividad anterior
+```js
+constructor() {
+    this.position = createVector(0, 0);
+    this.velocity = createVector(0, 0);
+    this.acceleration = createVector(0.001, 0.001);
+```
+
+Aceleración Aleatoria
+Con la aceleración aleatoria la trayectoria es imposible de conocer, los valores iniciales afectan poco en la trayectoria
+Ejemplo con Aceleración aleatoria
+```js
+constructor() {
+    this.position = createVector(width/2, height/2);
+    this.velocity = createVector(0, 0);
+    this.acceleration = createVector(random(-5,5), random(-5,5)); 
+  }
+
+  update() {
+    this.velocity.add(p5.Vector.random2D().mult(2)); 
+    this.position.add(this.velocity);     
+  }
+```
+Aceleración hacia el mouse
+El objeto persigue al mouse organicamente
+Ejemplo con Aceleración hacia el mouse
+```js
+ update() {
+     // Crear un vector hacia el mouse
+    let mouse = createVector(mouseX, mouseY);
+    this.acceleration = p5.Vector.sub(mouse, this.position); 
+    this.acceleration.setMag(0.2); 
+
+    this.velocity.add(this.acceleration); 
+    this.position.add(this.velocity);      
+  }
+```
