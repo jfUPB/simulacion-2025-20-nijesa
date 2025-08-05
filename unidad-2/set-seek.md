@@ -215,3 +215,16 @@ function drawArrow(base, vec, myColor) {
     pop();
 }
 ```
+#### - ¿Cómo funciona lerp() y lerpColor().
+
+lerp: realiza una interpolación lineal, osea que devuelve un valor entre start y stop según el porcentaje el amt (amt va de 0-1), el amt sería el porcentaje del valor entre start y stop, por ejemplo, si el start es 0 y stop es 10, con un amt de 0.5, el valor retornado sería 5
+
+lerpColor: es parecido a lerp, solo que los valores de start y stop no son numeros sino colores, dependen del amt
+#### - ¿Cómo se dibuja una flecha usando drawArrow()? 
+
+esta funcion dibuja una flecha desde un punto base con la longitud del vector, tambien pide un color.
+
+### Actividad 6
+####  - Cuál es el concepto del marco motion 101 y cómo se interpreta geométricamente.
+
+####  - ¿Cómo se aplica motion 101 en el ejemplo?
