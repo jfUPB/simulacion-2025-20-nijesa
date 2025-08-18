@@ -4,6 +4,152 @@
 
 
 ### Fricción.
+```js
+let pelota;
+let pista;
+let arrastrando = false; 
+let inicioArrastre;
+let hoyoPos;
+
+function setup() {
+  createCanvas(600, 400);
+  pelota = new Pelota();
+  pista = new Pista();
+  hoyoPos = createVector((width/2)-200,height/2);
+}
+
+function draw() {
+  background(0,100,0,170);
+
+  pista.display();
+  
+  fill(0)
+  circle(hoyoPos.x,hoyoPos.y,20)
+  
+  let coefFriccion = pista.contiene(pelota.pos) ? 0.5 : 0.05;
+
+  
+  if (pelota.vel.mag() > 0) {
+    let friccion = pelota.vel.copy();
+    friccion.mult(-1);
+    friccion.normalize();
+    friccion.mult(coefFriccion);
+    pelota.applyForce(friccion);
+  }
+
+  pelota.update();
+  pelota.edges();
+  pelota.display();
+  pelota.hoyo(hoyoPos);
+
+  
+  if (arrastrando) {
+    stroke(0);
+    strokeWeight(2);
+    line(pelota.pos.x, pelota.pos.y, mouseX, mouseY);
+  }
+}
+
+
+class Pelota {
+  constructor() {
+    this.pos = createVector(width / 2, height / 2);
+    this.vel = createVector(random(-5, 5), random(-5, 5));
+    this.acc = createVector(0, 0);
+    this.radio = 20;
+  }
+
+  applyForce(force) {
+    this.acc.add(force);
+  }
+
+  update() {
+    this.vel.add(this.acc);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+
+    
+    if (this.vel.mag() < 0.1) {
+      this.vel.mult(0);
+    }
+  }
+
+  edges() {
+    // Rebote en eje X
+    if (this.pos.x < this.radio || this.pos.x > width - this.radio) {
+      this.vel.x *= -0.7; 
+      this.pos.x = constrain(this.pos.x, this.radio, width - this.radio);
+    }
+    // Rebote en eje Y
+    if (this.pos.y < this.radio || this.pos.y > height - this.radio) {
+      this.vel.y *= -0.7;
+      this.pos.y = constrain(this.pos.y, this.radio, height - this.radio);
+    }
+  }
+
+  display() {
+    let c1='200, 100, 100'
+    fill(c1);
+    stroke(0);
+    circle(this.pos.x, this.pos.y, this.radio * 2);
+  }
+
+  dentroDePelota(x, y) {
+    return dist(x, y, this.pos.x, this.pos.y) < this.radio;
+  }
+  hoyo(posHoyo){
+    if(this.pos.x<=posHoyo.x+5 && this.pos.x>=posHoyo.x - 5 && this.pos.y <= posHoyo.y +5 && this.pos.y >= posHoyo.y - 5)
+    {
+       print("Entró en el hoyo");      
+    }
+  }
+}
+
+
+class Pista {
+  constructor() {
+    
+    this.x = width / 4;
+    this.y = height / 4;
+    this.w = width / 2;
+    this.h = height / 2;
+  }
+
+  display() {
+    noStroke();
+    fill(180, 220, 180, 150); // verde transparente
+    rect(this.x, this.y, this.w, this.h);
+  }
+
+  contiene(pos) {
+    return pos.x > this.x && pos.x < this.x + this.w &&
+           pos.y > this.y && pos.y < this.y + this.h;
+  }
+}
+
+
+function mousePressed() {
+  if (pelota.dentroDePelota(mouseX, mouseY)) {
+    arrastrando = true;
+    inicioArrastre = createVector(mouseX, mouseY);
+  }
+}
+
+function mouseReleased() {
+  if (arrastrando) {
+    arrastrando = false;
+    // vector desde mouse hasta la pelota (como un "slingshot")
+    let direccion = createVector(pelota.pos.x - mouseX, pelota.pos.y - mouseY);
+    direccion.mult(0.1); // escala de fuerza
+    pelota.applyForce(direccion);
+  }
+}
+
+```
+La fricción fue modelada a partir de su coeficiente, este cambia dependiendo de que superficie tenga debajo la pelota, la fuerza de fricción se modela a partir de la velocidad de la pelota, copiandola, multiplicando la copia por -1 y por el coeficiente luego de haber normalizado la copia y ya despues se aplica, esto hace que el coeficiente sea negativo (reste velocidad) y dependa del coeficiente para saber que tanta fuerza se resta al objeto
+La idea es que estamos en un campo de golf, donde la idea es meterla pelota en el hueco usando la fricción del terreno para saber que tan duro se le tiene que pegar a la pelota
+Link (https://editor.p5js.org/nijesa/sketches/kfkyJPcSQ)
+<img width="727" height="493" alt="image" src="https://github.com/user-attachments/assets/47d87a9f-1ce8-4098-a8d4-ec301cf50067" />
 
 
 ### Resistencia del aire y de fluidos.
@@ -121,6 +267,7 @@ class hoja {
 la fuerza del viento (fluido) la modelé con un vector que tiene que ver con el mouse, la dirección es desde la posición del mouse hasta el centro del canvas y la magnitud depende de que tan cerca o que tan lejos está el mouse del centro, a mayor distancia
 La obra generativa es una palmera cuyas hojas se mueven con el viento
 Link (https://editor.p5js.org/nijesa/full/RzBqAJK1H)
+<img width="571" height="512" alt="image" src="https://github.com/user-attachments/assets/c240744f-d2f7-46ec-9861-95b96ed4b1d5" />
 
 ### Atracción gravitacional.
 ```js
@@ -224,9 +371,8 @@ Link (https://editor.p5js.org/nijesa/sketches/2b5jLGbuc)
 <img width="437" height="483" alt="image" src="https://github.com/user-attachments/assets/f6354f73-3cab-4743-8dba-a2579c0a6dcb" />
 
 
-### Explica cómo modelaste cada fuerza.
-### Conceptualmente cómo se relaciona la fuerza con la obra generativa.
 ### Copia el enlace a tu ejemplo en p5.js.
 ### Copia el código.
 ### Captura una imagen representativa de tu ejemplo.
+
 
