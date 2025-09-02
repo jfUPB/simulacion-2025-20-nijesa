@@ -14,6 +14,7 @@
 
 * ¿Qué concepto de la unidad 2 y cómo lo aplicaste en la obra?
 > Tu respuesta aquí:
+  El concepto de vectores se usa en el movimiento de las hojas, tienen un vector posicion, un vector velocidad y uno aceleración
 >
 
 * ¿Qué concepto de la unidad 1 y cómo lo aplicaste en la obra?
@@ -69,10 +70,11 @@ if (keyIsDown(RIGHT_ARROW)) viento = 0.1;
 
 class Hoja {
   constructor(x, y) {
+    this.pos=createVector(this.x,this.y);
     this.x = x;
     this.y = y;
-    this.velY = random(1, 3);   
-    this.velX = 0;              
+    this.vel=createVector(0,random(1,3));
+    this.accel=createVector(0,0);    
     this.tam = random(15, 30);
     this.color = color(random(100, 255), random(100, 200), 0);
     
@@ -80,16 +82,16 @@ class Hoja {
 
   mover(fuerzaViento) {
     
-    this.y += this.velY;
-    this.velX+=fuerzaViento;
-    this.velX*=0.95;
-    this.x += this.velX + sin(this.y * 0.05);
+    this.y += this.vel.y;
+    this.vel.x+=fuerzaViento;
+    this.vel.x*=0.95;
+    this.x += this.vel.x + sin(this.y * 0.05);
 
     if (this.y > height) {
       ondas.push(new Onda(this.x, height)); 
       this.y = random(-50, 0);
       this.x = random(width);
-      this.velX = 0; 
+      this.vel.x = 0; 
     }
   }
 
@@ -129,6 +131,8 @@ class Onda {
 ```
 
 ## Captura de pantalla representativa
+<img width="745" height="501" alt="image" src="https://github.com/user-attachments/assets/d5ffbf03-5b0a-41e9-9aba-a484578b8245" />
+
 
 
 
