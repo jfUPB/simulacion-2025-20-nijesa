@@ -29,7 +29,7 @@
 
 ## Enlace a la obra en el editor de p5.js
 
-[Aquí está mi obra]([URL](https://editor.p5js.org/nijesa/sketches/xrtrgNAhS))
+[[Aquí está mi obra](https://editor.p5js.org/nijesa/sketches/xrtrgNAhS)]
 
 ## Código de la obra 
 
@@ -132,6 +132,7 @@ class Onda {
 
 ## Captura de pantalla representativa
 <img width="745" height="501" alt="image" src="https://github.com/user-attachments/assets/d5ffbf03-5b0a-41e9-9aba-a484578b8245" />
+
 
 
 
