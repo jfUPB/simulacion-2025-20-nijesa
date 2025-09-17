@@ -469,11 +469,152 @@ class ParticleSystem {
 
 ### Ejemplo 4.7
 
-3.e
-4.e
+3.Para este caso use las ondas y el movimiento sinoidal para las particulas, al empezar salen ondas de las 4 esquinas del canvas en forma de onda, van desapareciendo mientras se termina el lifespan, antes de explicar donde se usa el movimiento sinoidal hay que saber que hace un circulo en la mitad del canva, el circulo se puede mover con las flechas y su proposito es cambiar el movimiento de cualquier particula que lo toque, al chocar con el circulo la particula se mueve en la dirección opuesta con un movimiento sinoidal que recuerda un zigzag, la idea de este canva es ver como cambia el movimiento de las ondas cuando se chocan con un objeto, se usa el movimiento sinoidal para darle mas movimiento porque me parecia aburrido como se movian las particulas sin este efecto
+4. [Enlace](https://editor.p5js.org/nijesa/sketches/Y50yb6OYK)
 5.
 ```js
+let systems = [];
+let player;
+let lastSpawnTime = 0;
 
+function setup() {
+  createCanvas(600, 400);
+
+
+  player = new Player(width / 2, height / 2, 30);
+
+  
+  systems.push(new ParticleSystem(createVector(0, 0)));
+  systems.push(new ParticleSystem(createVector(width, 0)));
+  systems.push(new ParticleSystem(createVector(0, height)));
+  systems.push(new ParticleSystem(createVector(width, height)));
+}
+
+function draw() {
+  background(0,90);
+
+
+  player.update();
+  player.display();
+
+  
+  if (millis() - lastSpawnTime > 1000) {
+    for (let s of systems) {
+      for (let i = 0; i < 50; i++) {
+        s.addParticle();
+        s.addParticle();
+        s.addParticle();
+      }
+    }
+    lastSpawnTime = millis();
+  }
+
+  
+  for (let s of systems) {
+    s.run(player);
+  }
+}
+
+class Player {
+  constructor(x, y, r) {
+    this.pos = createVector(x, y);
+    this.r = r;
+    this.speed = 4;
+  }
+
+  update() {
+    if (keyIsDown(LEFT_ARROW)) this.pos.x -= this.speed;
+    if (keyIsDown(RIGHT_ARROW)) this.pos.x += this.speed;
+    if (keyIsDown(UP_ARROW)) this.pos.y -= this.speed;
+    if (keyIsDown(DOWN_ARROW)) this.pos.y += this.speed;
+
+
+    this.pos.x = constrain(this.pos.x, this.r / 2, width - this.r / 2);
+    this.pos.y = constrain(this.pos.y, this.r / 2, height - this.r / 2);
+  }
+
+  display() {
+    fill(0, 200, 255);
+    noStroke();
+    ellipse(this.pos.x, this.pos.y, this.r);
+  }
+}
+
+
+class Particle {
+  constructor(origin) {
+    this.pos = origin.copy();
+    let angle = random(TWO_PI);
+    let speed = random(2, 2.2);
+    this.vel = p5.Vector.fromAngle(angle).mult(speed);
+    this.acc = createVector(0, 0);
+    this.lifespan = 255;
+    this.zigzag = false;
+    this.offset = random(TWO_PI);
+  }
+
+  applyForce(f) {
+    this.acc.add(f);
+  }
+
+  update() {
+    this.vel.add(this.acc);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+
+
+    if (this.zigzag) {
+      this.pos.y += sin(frameCount * 0.2 + this.offset) * 2;
+    }
+
+    this.lifespan -= 0.7;
+  }
+
+  display() {
+    noStroke();
+    fill(200, 150, 255, this.lifespan);
+    ellipse(this.pos.x, this.pos.y, 8);
+  }
+
+  isDead() {
+    return this.lifespan < 0;
+  }
+
+  checkCollision(player) {
+    let d = dist(this.pos.x, this.pos.y, player.pos.x, player.pos.y);
+    if (d < player.r / 2) {
+      this.vel.x *= -1;
+      this.vel.y *= -1;
+      this.zigzag = true;
+    }
+  }
+}
+
+
+class ParticleSystem {
+  constructor(origin) {
+    this.origin = origin.copy();
+    this.particles = [];
+  }
+
+  addParticle() {
+    this.particles.push(new Particle(this.origin));
+  }
+
+  run(player) {
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      let p = this.particles[i];
+      p.update();
+      p.checkCollision(player);
+      p.display();
+      if (p.isDead()) {
+        this.particles.splice(i, 1);
+      }
+    }
+  }
+}
 ```
-6.e
+6. <img width="755" height="495" alt="image" src="https://github.com/user-attachments/assets/d8e18693-c1e8-41c7-9f17-bcaec47051a0" />
+
+
 
