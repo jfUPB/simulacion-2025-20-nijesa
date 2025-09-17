@@ -194,7 +194,7 @@ class Particle {
 6. <img width="747" height="502" alt="image" src="https://github.com/user-attachments/assets/f5b91aeb-5782-4357-830e-a4f96c38e2a6" />
 
 
-### Ejemplo 4.6
+### Ejemplo 4.5
 3. El concepto de este codigo son fuegos artificiales, cuando se toca una tecla se añade una particula a las particulas que se generan, los colores cambian dependiendo del lifespan usando lerpcolor, osea aleatoriedad controlada, el efecto de fuegos artificiales se da desde las figuras grices que aparecen al principio (estas aparecen de manera aleatoria por el canvas) el reciclado de particulas es el mismo que he usado desde el principio
 4. [Enlace](https://editor.p5js.org/nijesa/sketches/7gkmYbYnN)
 5. 
@@ -326,4 +326,154 @@ class ParticleSystem {
 
 ```
 6. <img width="745" height="507" alt="image" src="https://github.com/user-attachments/assets/f243e3df-ac6a-4769-a9f6-fe06194858cb" />
+
+### Ejemplo 4.6
+
+3. El comportamiento que se muestra en el codigose busca que sea una ducha o cascada (representada por las particulas que caen) y un objeto que se mueve dentro del agua, empujandola y bloqueando su caida, mientras mas rapido se mueve el objeto mas se ven afectadas las particulas con las que choca, se aplicaron los conceptos de fuerzas y vectores, las colisiones se hicieron con una clase dentro de particle que toman pa posición del cuadrado +/- la mitad de su tamaño para saber con que lado estan colisionando, se le aplica un vector cuya magnitud está atada a suvelocidad y ya, si el cuadrado esta quieto las particulas se quedan encima y se mueven a uno de los lados del cuadrado
+4. [Enlace](https://editor.p5js.org/nijesa/sketches/V4uVY4BjI)
+5.
+```js
+let ps;
+let prevMouse; 
+let mouseVel;  
+
+function setup() {
+  createCanvas(600, 400);
+  ps = new ParticleSystem(createVector(width / 4, 50));
+  prevMouse = createVector(mouseX, mouseY);
+  mouseVel = createVector(0, 0);
+}
+
+function draw() {
+  background(51);
+
+  
+  mouseVel = createVector(mouseX - prevMouse.x, mouseY - prevMouse.y);
+  prevMouse.set(mouseX, mouseY);
+
+ 
+  fill(255, 150);
+  noStroke();
+  rectMode(CENTER);
+  rect(mouseX, mouseY, 25, 25);
+
+  // fuerzas globales
+  let gravedad = createVector(0, 0.1);
+  let viento = createVector(0.02, 0);
+
+  ps.addParticle();
+  ps.applyForce(gravedad);
+  ps.applyForce(viento);
+
+  ps.run();
+}
+
+class Particle {
+  constructor(pos) {
+    this.pos = pos.copy();
+    this.vel = createVector(random(-1, 1), random(-2, 0));
+    this.acc = createVector(0, 0);
+    this.lifespan = 255;
+    this.r = 6; 
+  }
+
+  applyForce(f) { this.acc.add(f); }
+
+  update() {
+    this.vel.add(this.acc);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+    this.lifespan -= 2;
+
+   
+    let half = 25 / 2;
+    let left = mouseX - half;
+    let right = mouseX + half;
+    let top = mouseY - half;
+    let bottom = mouseY + half;
+
+    
+    if (this.pos.x > left && this.pos.x < right &&
+        this.pos.y > top && this.pos.y < bottom) {
+      
+     
+      let overlapX = min(abs(this.pos.x - left), abs(this.pos.x - right));
+      let overlapY = min(abs(this.pos.y - top), abs(this.pos.y - bottom));
+
+      if (overlapX < overlapY) {
+        
+        if (this.pos.x < mouseX) {
+          this.pos.x = left - this.r; 
+        } else {
+          this.pos.x = right + this.r; 
+        }
+        
+        let force = createVector(mouseVel.x, 0);
+        force.mult(0.2); 
+        this.applyForce(force);
+      } else {
+        
+        if (this.pos.y < mouseY) {
+          this.pos.y = top - this.r; 
+        } else {
+          this.pos.y = bottom + this.r; 
+        }
+     
+        let force = createVector(0, mouseVel.y);
+        force.mult(0.2);
+        this.applyForce(force);
+
+        this.applyForce(createVector(random(-0.1, 0.1), 0));
+      }
+    }
+  }
+
+  display() {
+    fill(0, 180, 255, this.lifespan);
+    noStroke();
+    ellipse(this.pos.x, this.pos.y, this.r * 2);
+  }
+
+  isDead() { return this.lifespan < 0; }
+}
+
+class ParticleSystem {
+  constructor(pos) {
+    this.origin = pos.copy();
+    this.particles = [];
+  }
+
+  addParticle() {
+    this.particles.push(new Particle(this.origin));
+  }
+
+  applyForce(f) {
+    for (let p of this.particles) p.applyForce(f);
+  }
+
+  run() {
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      let p = this.particles[i];
+      p.update();
+      p.display();
+      if (p.isDead()) this.particles.splice(i, 1);
+    }
+  }
+}
+
+```
+6. <img width="562" height="496" alt="image" src="https://github.com/user-attachments/assets/f605a286-bc3f-4fbb-8aa2-c801438caffa" />
+
+
+
+
+### Ejemplo 4.7
+
+3.e
+4.e
+5.
+```js
+
+```
+6.e
 
