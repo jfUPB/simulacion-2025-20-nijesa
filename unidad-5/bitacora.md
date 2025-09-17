@@ -194,3 +194,136 @@ class Particle {
 6. <img width="747" height="502" alt="image" src="https://github.com/user-attachments/assets/f5b91aeb-5782-4357-830e-a4f96c38e2a6" />
 
 
+### Ejemplo 4.6
+3. El concepto de este codigo son fuegos artificiales, cuando se toca una tecla se añade una particula a las particulas que se generan, los colores cambian dependiendo del lifespan usando lerpcolor, osea aleatoriedad controlada, el efecto de fuegos artificiales se da desde las figuras grices que aparecen al principio (estas aparecen de manera aleatoria por el canvas) el reciclado de particulas es el mismo que he usado desde el principio
+4. [Enlace](https://editor.p5js.org/nijesa/sketches/7gkmYbYnN)
+5. 
+```js
+let particleSystems = []; 
+let shapes = ["circle", "square"];
+
+function setup() {
+  createCanvas(600, 400);
+
+  
+  for (let i = 0; i < 3; i++) {
+    let pos = createVector(random(width), random(height));
+    let shapeType = random(shapes);
+    particleSystems.push(new ParticleSystem(pos, shapeType));
+  }
+}
+
+function draw() {
+  background(51);
+
+
+  for (let ps of particleSystems) {
+    ps.run();
+  }
+}
+
+function keyPressed() {
+ 
+  for (let ps of particleSystems) {
+    ps.addParticle();
+  }
+}
+
+
+class Particle {
+  constructor(origin) {
+    this.origin = origin.copy(); // centro del sistema
+    this.angle = random(TWO_PI); // ángulo de salida
+    this.radius = 0;             // distancia al centro (expande como onda)
+    this.lifespan = 255;
+  }
+
+  update() {
+    
+    this.radius += 2; 
+    this.pos = p5.Vector.add(
+      this.origin,
+      createVector(cos(this.angle) * this.radius, sin(this.angle) * this.radius)
+    );
+    this.lifespan -= 4;
+  }
+
+  display() {
+    let c1 = color(0, 200, 255);
+    let c2 = color(255, 100, 0);
+    let t = map(this.lifespan, 255, 0, 0, 1);
+    let c = lerpColor(c1, c2, t);
+
+    noStroke();
+    fill(c, this.lifespan);
+    ellipse(this.pos.x, this.pos.y, 12);
+  }
+
+  isDead() {
+    return this.lifespan < 0;
+  }
+}
+
+
+class Confetti extends Particle {
+  display() {
+    let c1 = color(50, 255, 100);
+    let c2 = color(200, 0, 200);
+    let t = map(this.lifespan, 255, 0, 0, 1);
+    let c = lerpColor(c1, c2, t);
+
+    push();
+    translate(this.pos.x, this.pos.y);
+    rotate(frameCount / 20.0);
+    fill(c, this.lifespan);
+    rectMode(CENTER);
+    rect(0, 0, 10, 10);
+    pop();
+  }
+}
+
+
+class ParticleSystem {
+  constructor(pos, type) {
+    this.origin = pos.copy();
+    this.particles = [];
+    this.type = type; 
+  }
+
+  addParticle() {
+    if (this.type === "circle") {
+      this.particles.push(new Particle(this.origin));
+    } else {
+      this.particles.push(new Confetti(this.origin));
+    }
+  }
+
+  run() {
+    
+    noStroke();
+    fill(255, 150); // marcador más sutil
+    if (this.type === "circle") {
+      ellipse(this.origin.x, this.origin.y, 20); 
+    } else {
+      rectMode(CENTER);
+      rect(this.origin.x, this.origin.y, 20, 20); 
+    }
+
+
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      let p = this.particles[i];
+      p.update();
+      p.display();
+
+      
+      if (p.isDead()) {
+        this.particles.splice(i, 1);
+        this.addParticle();
+      }
+    }
+  }
+}
+
+```
+6. <img width="745" height="507" alt="image" src="https://github.com/user-attachments/assets/f243e3df-ac6a-4769-a9f6-fe06194858cb" />
+
