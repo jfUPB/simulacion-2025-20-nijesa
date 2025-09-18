@@ -1,4 +1,4 @@
-# Evidencias de la unidad 5
+<img width="920" height="666" alt="image" src="https://github.com/user-attachments/assets/80c89f63-78e2-48fe-9112-d9ed4ac4403e" /># Evidencias de la unidad 5
 
 ## Actividad 2
 ### Ejemplo 4.2
@@ -618,3 +618,408 @@ class ParticleSystem {
 
 
 
+
+
+## Aplicación
+1. ![BocetoAU5](https://github.com/user-attachments/assets/1e394f59-ebf0-42b7-b140-2477ab760c95)
+    #### Concepto
+   la idea es hacer una "colonia" de organismos que migran e interactuan entre si, serian puntos con colitas que salen de sistemas de particulas, interactuan atrayendose y repeliendose presentando movimientos armonicos cuando el usuario mete la mano. Usaria fuerzas locales y globales como viento, atracción y repulsion para generar patrones
+   Busco comunicar el comportamiento de comunidades agresivas dentro de la misma especie, por ejemplo los peces beta que solo se atraen a hembras de su misma especie (o machos que parezcan hembras) mientras que atacan a los de su mismo genero o huyen de ellos.
+
+2. Uso los concepto de herencia y polimorfismo con los organismos con cola y sin cola, viniendo ambos de la clase particle (que está vacia) y al heredar cambian entre ellas para parecer cosas diferentes
+3. Uso vectores para la posición, velocidad y las fuerzas
+   El motion 101 para darle posición, velocidad y aceleración
+   Uso fuerzas como gravedad, atracción, repulsión y viento
+   Seno y oscilar: los uso para darle sincronia, la onda senoidal atraviesa el canvas y las coordenadas polares para el spawn de las particulas
+4. gestiono el tiempo de vida con el lifespan, que llevo usando toda la unidad, que al llegar a 0 reutiliza la particula y evita sobrecargas en la memoria, además limpio arrays iterando desde el final para poder hacer un splice(i,1).
+6. [Enlace](https://editor.p5js.org/nijesa/sketches/CvcBiH8hy)
+7.
+```js
+// Resonancia Migratoria
+// Obra generativa con herencia/polimorfismo, motion101, fuerzas, sinusoides y pooling.
+
+// ---------- Config / global ----------
+let system;
+let pools = { spark: [], ribbon: [] }; // object pools
+let maxParticles = 600;
+let showDebug = false;
+let wave = { active: false, r:0, speed:6 };
+
+function setup(){
+  createCanvas(900, 600);
+  colorMode(HSB, 360, 100, 100, 1);
+  system = new ParticleSystem();
+
+  // create some initial anchors (islas)
+  for(let i=0;i<4;i++){
+    let ang = map(i,0,4, -PI/6, PI + PI/6);
+    let r = width*0.18;
+    let pos = p5.Vector.fromAngle(ang).mult(r).add(createVector(width/2, height/2));
+    system.addAnchor(pos);
+  }
+
+  // seeding initial particles
+  for(let i=0;i<80;i++){
+    system.spawnRandom();
+  }
+
+  textFont('Helvetica', 12);
+}
+
+function draw(){
+  background(220, 20, 10, 0.12);
+
+  // Draw central subtle gradient
+  noStroke();
+  for(let i=0;i<6;i++){
+    fill(210, 10, map(i,0,5,2,10));
+    ellipse(width/2, height/2, 800 - i*80, 800 - i*80);
+  }
+
+  // Interactivity UI (top)
+  push();
+  noStroke();
+  fill(0,0,100,0.9);
+  rect(0,0,width,26);
+  fill(0,0,10);
+  text('Move mouse = attractor | SHIFT+m = repulse | Click = pulse wave | 1 spark | 2 ribbon | s toggle sync | r reseed', 10, 18);
+  pop();
+
+  // active wave expands
+  if(wave.active){
+    wave.r += wave.speed;
+    let a = map(wave.r, 0, max(width,height), 1, 0);
+    stroke(200, 80, 80, a);
+    strokeWeight(2);
+    noFill();
+    ellipse(mouseX, mouseY, wave.r*2);
+    if(a <= 0.02) wave.active = false;
+  }
+
+  // compute attractor/repulsor force from mouse
+  let attractor = createVector(mouseX, mouseY);
+  let attractStrength = keyIsDown(SHIFT)? -900 : 800; // repulse if shift
+
+  // evolve system: anchors produce particles and particles interact (pairwise small influence)
+  system.run(attractor, attractStrength);
+
+  if(showDebug){
+    fill(0,0,100);
+    noStroke();
+    text('particles: ' + system.particles.length + ' poolS:' + pools.spark.length + ' poolR:' + pools.ribbon.length, 10, height-10);
+  }
+}
+
+function keyPressed(){
+  if(key === '1') for(let i=0;i<30;i++) system.spawnType('spark');
+  if(key === '2') for(let i=0;i<15;i++) system.spawnType('ribbon');
+  if(key === 'r' || key === 'R') {
+    system.reset();
+  }
+  if(key === 's' || key === 'S') system.toggleSync();
+}
+
+function mousePressed(){
+  // pulse wave
+  wave.active = true;
+  wave.r = 10;
+  wave.speed = 8;
+
+  // spawn local burst
+  for(let i=0;i<12;i++){
+    system.spawnBurst(createVector(mouseX, mouseY));
+  }
+}
+
+// ---------- ParticleSystem, Anchors ----------
+class ParticleSystem {
+  constructor(){
+    this.particles = [];
+    this.anchors = []; // anchor points with slight oscillation
+    this.sync = false; // global sync toggle
+    this.syncPhase = 0;
+  }
+
+  addAnchor(pos){
+    this.anchors.push({
+      pos: pos.copy(),
+      base: pos.copy(),
+      amp: random(8,30),
+      freq: random(0.005, 0.02),
+      hue: random(180, 300)
+    });
+  }
+
+  spawnRandom(){
+    let a = random(this.anchors);
+    let start = p5.Vector.add(a.pos, p5.Vector.random2D().mult(random(6,18)));
+    this.spawnType(random(['spark','ribbon']));
+  }
+
+  spawnBurst(center){
+    for(let i=0;i<18;i++){
+      let t = random(['spark','ribbon']);
+      let angle = random(TWO_PI);
+      let r = random(6, 40);
+      let ppos = createVector(center.x + cos(angle)*r, center.y + sin(angle)*r);
+      this._spawn(t, ppos);
+    }
+  }
+
+  spawnType(t){
+    // spawn near random anchor using polar coordinates
+    let a = random(this.anchors);
+    let theta = random(-PI, PI);
+    let r = random(10, 120);
+    let spawnPos = p5.Vector.fromAngle(theta).mult(r).add(a.pos);
+    this._spawn(t, spawnPos);
+  }
+
+  _spawn(type, pos){
+    if(this.particles.length >= maxParticles) return;
+    let p;
+    // pooling
+    if(type === 'spark'){
+      if(pools.spark.length > 0) p = pools.spark.pop();
+      else p = new Spark();
+    } else {
+      if(pools.ribbon.length > 0) p = pools.ribbon.pop();
+      else p = new Ribbon();
+    }
+    p.onSpawn(pos);
+    this.particles.push(p);
+  }
+
+  toggleSync(){ this.sync = !this.sync; }
+
+  reset(){
+    // move all active to pool
+    for(let p of this.particles){
+      p.reset();
+      if(p instanceof Spark) pools.spark.push(p);
+      else pools.ribbon.push(p);
+    }
+    this.particles = [];
+    // re-randomize anchors
+    this.anchors = [];
+    for(let i=0;i<4;i++){
+      let ang = map(i,0,4, -PI/6, PI + PI/6);
+      let r = width*0.18;
+      let pos = p5.Vector.fromAngle(ang).mult(r).add(createVector(width/2, height/2));
+      this.addAnchor(pos);
+    }
+  }
+
+  run(attractor, strength){
+    // animate anchors (sinusoidal movement, UNIT: sinusoids)
+    for(let a of this.anchors){
+      let ang = frameCount * a.freq;
+      a.pos.x = a.base.x + cos(ang) * a.amp;
+      a.pos.y = a.base.y + sin(ang * 1.1) * (a.amp*0.4);
+      // draw anchor
+      noStroke();
+      fill(a.hue, 60, 60, 0.9);
+      ellipse(a.pos.x, a.pos.y, 10);
+    }
+
+    // spawn a few each frame near anchors
+    for(let i=0;i<2;i++) this.spawnType(random(['spark','ribbon']));
+
+    // optional global sync: tiny phase nudges to each particle (coupling)
+    if(this.sync){
+      this.syncPhase += 0.02;
+    }
+
+    // apply interactions and update particles
+    // also simple pairwise short-range attraction among particles (but limited)
+    for(let i=this.particles.length -1; i>=0; i--){
+      let p = this.particles[i];
+
+      // attractor from mouse / repulse
+      let dir = p5.Vector.sub(attractor, p.pos);
+      let d = dir.mag();
+      d = constrain(d, 5, 500);
+      dir.normalize();
+      let fmag = (strength * p.mass) / (d*d); // inverse-square-ish
+      // clamp magnitude to avoid explosion
+      fmag = constrain(fmag, -120, 120);
+      let f = dir.mult(fmag);
+      p.applyForce(f);
+
+      // wave perturbation: if wave active and particle near wave radius from mouse, apply lateral sine kick
+      if(wave.active){
+        let distToWaveCenter = p5.Vector.dist(p.pos, createVector(mouseX, mouseY));
+        if(abs(distToWaveCenter - wave.r) < 32){
+          // lateral push using perpendicular direction and sinusoidal modulation
+          let perp = createVector(-(p.pos.y - mouseY), p.pos.x - mouseX).normalize();
+          let kick = perp.mult(3 * sin((frameCount*0.2 + p.id)*0.8));
+          p.applyForce(kick);
+        }
+      }
+
+      // local pairwise weak attraction/repulsion to create flocking-like group (limited cost)
+      // sample a few neighbors randomly to approximate N^2 cheaply
+      for(let k=0;k<3;k++){
+        let j = floor(random(this.particles.length));
+        if(j===i) continue;
+        let q = this.particles[j];
+        let dv = p5.Vector.sub(q.pos, p.pos);
+        let dd = dv.mag();
+        if(dd < 40 && dd > 2){
+          // slight repulsion to avoid overlap
+          let rep = dv.copy().normalize().mult(-0.02 * (40-dd));
+          p.applyForce(rep);
+        } else if(dd < 140 && dd > 40){
+          // mild attraction
+          let att = dv.copy().normalize().mult(0.002 * (dd-40));
+          p.applyForce(att);
+        }
+      }
+
+      // self update
+      // if sync on, apply sinusoids to angle/oscillator of particle subclasses
+      if(this.sync) p.applySync(this.syncPhase);
+
+      p.update();
+      p.display();
+
+      if(p.isDead()){
+        // recycle to pool
+        this.particles.splice(i,1);
+        p.reset();
+        if(p instanceof Spark) pools.spark.push(p);
+        else pools.ribbon.push(p);
+      }
+    }
+  }
+}
+
+// ---------- Base Particle ----------
+let _PARTICLE_ID = 0;
+class Particle {
+  constructor(){
+    this.id = _PARTICLE_ID++;
+    this.pos = createVector();
+    this.vel = createVector();
+    this.acc = createVector();
+    this.mass = 1;
+    this.lifespan = 1.0; // normalized 1..0
+    this.lifeDecay = 0.005 + random(0.0005, 0.002);
+  }
+
+  onSpawn(pos){
+    // initialize
+    this.pos = pos.copy();
+    this.vel = p5.Vector.random2D().mult(random(0.2,1.6));
+    this.acc = createVector(0,0);
+    this.mass = random(0.6, 1.6);
+    this.lifespan = 1.0;
+    this.lifeDecay = 0.001 + random(0.001, 0.004);
+  }
+
+  applyForce(f){
+    let ff = p5.Vector.div(f, this.mass);
+    this.acc.add(ff);
+  }
+
+  applySync(phase){
+    // base does nothing; subclasses may override to accept a phase parameter (polymorphism)
+  }
+
+  update(){
+    // Motion 101
+    this.vel.add(this.acc);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+    this.vel.mult(0.995); // small damping
+    this.lifespan -= this.lifeDecay;
+  }
+
+  display(){
+    // placeholder: subclasses override
+    noStroke();
+    fill(0,0,100,this.lifespan);
+    ellipse(this.pos.x, this.pos.y, 4);
+  }
+
+  isDead(){
+    return this.lifespan <= 0;
+  }
+
+  reset(){
+    // clear heavy structures if any (for pooling safety)
+    this.acc.set(0,0);
+    this.vel.set(0,0);
+  }
+}
+
+// ---------- Spark (pointy) ----------
+class Spark extends Particle {
+  constructor(){ super(); this.hue = random(0,360); this.size = random(2,6); this.osc = random(0.1,1.0);}
+  onSpawn(pos){
+    super.onSpawn(pos);
+    this.hue = random(160, 320);
+    this.size = random(2,6);
+    this.osc = random(2,8);
+  }
+  applySync(phase){
+    // change velocity slightly according to a sinusoidal phase (coupling)
+    let s = sin(phase + this.id*0.07) * 0.05;
+    this.applyForce(createVector(s, -s));
+  }
+  update(){
+    // small SHM on size using internal oscillator
+    this.size = 2 + 4 * (0.5 + 0.5*sin(frameCount * 0.02 * this.osc + this.id));
+    super.update();
+  }
+  display(){
+    noStroke();
+    let alpha = constrain(this.lifespan, 0, 1);
+    fill(this.hue, 70, 70, alpha);
+    ellipse(this.pos.x, this.pos.y, this.size);
+  }
+}
+
+// ---------- Ribbon (trail) ----------
+class Ribbon extends Particle {
+  constructor(){ super(); this.hue = random(0,360); this.len = 18; this.history = []; this.maxH=30; }
+  onSpawn(pos){
+    super.onSpawn(pos);
+    this.hue = random(100, 220);
+    this.len = random(12,28);
+    this.history = [];
+    this.maxH = 24;
+  }
+  applySync(phase){
+    // slight torque on velocity rotating it, to create swirling synchronized motion
+    let ang = 0.02 * sin(phase + this.id*0.03);
+    this.vel.rotate(ang);
+  }
+  update(){
+    // record history for tail
+    this.history.push(this.pos.copy());
+    if(this.history.length > this.maxH) this.history.shift();
+    super.update();
+  }
+  display(){
+    // draw tail as polyline fading with age
+    noFill();
+    stroke(this.hue, 70, 70, 0.9);
+    strokeWeight(2);
+    beginShape();
+    for(let i=0;i<this.history.length;i++){
+      let h = this.history[i];
+      let t = i/this.history.length;
+      stroke(this.hue, 70, 70, t*0.9);
+      vertex(h.x, h.y);
+    }
+    endShape();
+    // head
+    noStroke();
+    fill(this.hue, 70, 70, 1.0);
+    ellipse(this.pos.x, this.pos.y, 5 + this.mass*3);
+  }
+}
+
+```
+8. <img width="920" height="666" alt="image" src="https://github.com/user-attachments/assets/490a3b1b-88dd-4d9b-bfbf-3aa71d9c0cac" />
