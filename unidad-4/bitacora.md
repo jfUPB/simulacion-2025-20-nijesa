@@ -4,36 +4,48 @@
 
 * ¿Qué concepto de la unidad 4 y cómo lo aplicaste en la obra?
 > Tu respuesta aquí:
+
   De la unidad 4 usé el movimiento senoidal en el movimiento de caida de las hojas y las ondas que salen cuando choca con el piso
+
 >
 
 * ¿Qué concepto de la unidad 3 y cómo lo aplicaste en la obra?
 > Tu respuesta aquí:
+
   se utiliza el motion 101 para la fuerza del viento que se aplica a las hojas en 
+
 >
 
 * ¿Qué concepto de la unidad 2 y cómo lo aplicaste en la obra?
 > Tu respuesta aquí:
+
   El concepto de vectores se usa en el movimiento de las hojas, tienen un vector posicion, un vector velocidad y uno aceleración
 >
 
 * ¿Qué concepto de la unidad 1 y cómo lo aplicaste en la obra?
 > Tu respuesta aquí:
+
   Uso el random para la posición inicial cuando se instancian las hojas
+
 >
 
 ## ¿Cómo resolviste la interacción?
 > Tu respuesta aquí:
+
   las flechas dictan la dirección de la fuerza del viento que se aplica a las hojas
+
 >
 
 ## Enlace a la obra en el editor de p5.js
 
+
 [Aquí está mi obra](https://editor.p5js.org/nijesa/sketches/xrtrgNAhS)
+
 
 ## Código de la obra 
 
 ``` js
+
 let hojas = [];   
 let ondas = [];   
 let numHojas = 50; 
@@ -132,6 +144,7 @@ class Onda {
 
 ## Captura de pantalla representativa
 <img width="745" height="501" alt="image" src="https://github.com/user-attachments/assets/d5ffbf03-5b0a-41e9-9aba-a484578b8245" />
+
 
 
 
