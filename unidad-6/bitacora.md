@@ -62,4 +62,261 @@ Cohesión: Mantiene unido al grupo llevando el boid hacia la posición promedio 
 Los boids empezaron a repelerse entre ellos, dejaron de formar enjambres y adoptaron un movimiento mas caotico, los boids mantienen una buena distancia el uno del otro y rara vevz forman agrupaciones estables, por lo que la coheción quedó basicamente anulada por la magnitud de la furza de separación
 <img width="656" height="252" alt="image" src="https://github.com/user-attachments/assets/f2824c22-a47c-447b-b0a6-4b58623275ea" />
 
+# Apply
 
+2. Codigo:
+```js
+let song;
+let fft;
+let particles = [];
+let flowfield;
+let cols, rows;
+let scl = 20;
+let inc = 0.1;
+let zoff = 0;
+let playing = false;
+
+let showFlowfield = false;
+let mode = 1;
+
+let ripples = [];
+
+function preload() {
+  song = loadSound("assets/Pokemon_Atrapalos_Ya_Opening_1.mp3");
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  colorMode(HSB, 255);
+  fft = new p5.FFT();
+
+  cols = floor(width / scl);
+  rows = floor(height / scl);
+  flowfield = new Array(cols * rows);
+
+  for (let i = 0; i < 200; i++) {
+    particles.push(new Particle());
+  }
+}
+
+function draw() {
+  background(0, 40);
+
+  let spectrum = fft.analyze();
+
+  let yoff = 0;
+  for (let y = 0; y < rows; y++) {
+    let xoff = 0;
+    for (let x = 0; x < cols; x++) {
+      let index = x + y * cols;
+      let angle = noise(xoff, yoff, zoff) * TWO_PI * 4;
+      let v = p5.Vector.fromAngle(angle);
+      v.setMag(0.3);
+      flowfield[index] = v;
+      xoff += inc;
+    }
+    yoff += inc;
+  }
+  zoff += 0.003;
+
+  if (showFlowfield) {
+    stroke(100, 100, 255, 50);
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        let index = x + y * cols;
+        let v = flowfield[index];
+        push();
+        translate(x * scl, y * scl);
+        rotate(v.heading());
+        line(0, 0, scl / 2, 0);
+        pop();
+      }
+    }
+  }
+
+  for (let p of particles) {
+    // Ver si el particle está dentro de alguna onda
+    let inRipple = false;
+    for (let r of ripples) {
+      let d = dist(p.pos.x, p.pos.y, r.x, r.y);
+      if (d < r.size / 2) {
+        inRipple = true;
+        break;
+      }
+    }
+
+    if (inRipple) {
+      p.flock(particles); // flocking dentro de las ondas
+    } else {
+      p.follow(flowfield); // normal fuera de las ondas
+    }
+
+    p.update();
+    p.show(spectrum);
+    p.edges();
+  }
+
+  // Dibujar las ondas
+  noFill();
+  stroke(180, 150);
+  strokeWeight(2);
+  for (let i = ripples.length - 1; i >= 0; i--) {
+    let r = ripples[i];
+    ellipse(r.x, r.y, r.size);
+    r.size += 4;
+    r.alpha -= 2;
+    if (r.alpha <= 0) {
+      ripples.splice(i, 1);
+    }
+  }
+}
+
+function mousePressed() {
+  if (!playing) {
+    song.loop();
+    playing = true;
+  } else {
+    if (song.isPlaying()) {
+      song.pause();
+    } else {
+      song.play();
+    }
+  }
+
+  ripples.push({ x: mouseX, y: mouseY, size: 10, alpha: 200 });
+}
+
+function keyPressed() {
+  if (key === '1') {
+    showFlowfield = !showFlowfield;
+  } else if (key === '2') {
+    mode = 1;
+  } else if (key === '3') {
+    mode = 2;
+  } else if (key === 'C' || key === 'c') {
+    // despejar partículas
+    for (let p of particles) {
+      p.pos = createVector(random(width), random(height));
+      p.vel = createVector(0, 0);
+      p.acc = createVector(0, 0);
+    }
+  }
+}
+
+class Particle {
+  constructor() {
+    this.pos = createVector(random(width), random(height));
+    this.vel = createVector(0, 0);
+    this.acc = createVector(0, 0);
+    this.maxspeed = 3;
+    this.prevPos = this.pos.copy();
+
+    // Cada partícula nace roja o blanca y mantiene ese color
+    this.color = random(1) < 0.5 ? color(0, 0, 255) : color(0, 255, 255);
+  }
+
+  follow(vectors) {
+    let x = floor(this.pos.x / scl);
+    let y = floor(this.pos.y / scl);
+    let index = x + y * cols;
+    let force = vectors[index];
+    this.applyForce(force);
+  }
+
+  applyForce(force) {
+    this.acc.add(force);
+  }
+
+  flock(particles) {
+    let perception = 50;
+    let steeringAlign = createVector();
+    let steeringCohesion = createVector();
+    let steeringSeparation = createVector();
+    let total = 0;
+
+    for (let other of particles) {
+      let d = dist(this.pos.x, this.pos.y, other.pos.x, other.pos.y);
+      if (other != this && d < perception) {
+        steeringAlign.add(other.vel);
+        steeringCohesion.add(other.pos);
+
+        let diff = p5.Vector.sub(this.pos, other.pos);
+        diff.div(d * d);
+        steeringSeparation.add(diff);
+
+        total++;
+      }
+    }
+
+    if (total > 0) {
+      steeringAlign.div(total);
+      steeringAlign.setMag(this.maxspeed);
+      steeringAlign.sub(this.vel);
+      steeringAlign.limit(0.1);
+
+      steeringCohesion.div(total);
+      steeringCohesion.sub(this.pos);
+      steeringCohesion.setMag(this.maxspeed);
+      steeringCohesion.sub(this.vel);
+      steeringCohesion.limit(0.1);
+
+      steeringSeparation.div(total);
+      steeringSeparation.setMag(this.maxspeed);
+      steeringSeparation.sub(this.vel);
+      steeringSeparation.limit(0.1);
+    }
+
+    this.applyForce(steeringAlign);
+    this.applyForce(steeringCohesion);
+    this.applyForce(steeringSeparation);
+  }
+
+  update() {
+    this.vel.add(this.acc);
+    this.vel.limit(this.maxspeed);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+  }
+
+  show(spectrum) {
+    let freq = spectrum[int(map(this.pos.x, 0, width, 0, spectrum.length))];
+    let r = map(freq, 0, 255, 8, 25);
+
+    noStroke();
+    fill(this.color);
+    if (mode === 1) {
+      ellipse(this.pos.x, this.pos.y, r, r);
+    } else if (mode === 2) {
+      rect(this.pos.x, this.pos.y, r, r);
+    }
+  }
+
+  edges() {
+    if (this.pos.x > width) {
+      this.pos.x = 0;
+      this.updatePrev();
+    }
+    if (this.pos.x < 0) {
+      this.pos.x = width;
+      this.updatePrev();
+    }
+    if (this.pos.y > height) {
+      this.pos.y = 0;
+      this.updatePrev();
+    }
+    if (this.pos.y < 0) {
+      this.pos.y = height;
+      this.updatePrev();
+    }
+  }
+
+  updatePrev() {
+    this.prevPos = this.pos.copy();
+  }
+}
+
+```
+
+<img width="971" height="692" alt="image" src="https://github.com/user-attachments/assets/e1a63c2d-0f1e-41a5-bdfd-4e04f4d5012f" />
+
+https://editor.p5js.org/nijesa/sketches/KUrIYDFqg
