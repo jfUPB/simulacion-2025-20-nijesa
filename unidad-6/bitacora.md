@@ -63,6 +63,7 @@ Los boids empezaron a repelerse entre ellos, dejaron de formar enjambres y adopt
 <img width="656" height="252" alt="image" src="https://github.com/user-attachments/assets/f2824c22-a47c-447b-b0a6-4b58623275ea" />
 
 # Apply
+1. ![Imagen de WhatsApp 2025-10-02 a las 13 54 05_1db999e8](https://github.com/user-attachments/assets/0d7ce9cd-a133-4d7b-9178-c0442dcc2f36)
 
 2. Codigo:
 ```js
@@ -320,3 +321,4 @@ class Particle {
 <img width="971" height="692" alt="image" src="https://github.com/user-attachments/assets/e1a63c2d-0f1e-41a5-bdfd-4e04f4d5012f" />
 
 https://editor.p5js.org/nijesa/sketches/KUrIYDFqg
+
