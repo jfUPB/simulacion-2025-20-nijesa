@@ -356,3 +356,7 @@ function windowResized() {
 https://editor.p5js.org/nijesa/sketches/KUrIYDFqg
 
 
+La autoevaluación es 5 porque hice todas las actividades completas
+
+
+
