@@ -35,7 +35,7 @@ Esta me pareció muy interesante, ya que tuve que leerla varias veces para enten
 
 ### Ejercicio 1:
 
-Descripción: Creo un mundo donde varios objetos caen
+Descripción: Creo un mundo donde varios objetos caen y rebotan con el suelo y entre si
 
 ```js
 const { Engine, World, Bodies, Mouse, MouseConstraint } = Matter;
@@ -91,5 +91,90 @@ function draw() {
   rect(ground.position.x, ground.position.y, 600, 40);
 }
 ```
+GIF:
+
+https://github.com/user-attachments/assets/76d95010-8be7-423c-a1d5-239b071bbd1c
+
+Link: https://editor.p5js.org/nijesa/sketches/mo3s7AyXu
+
+### Ejercicio 2
+
+Descripción: Creé dos círculos unidos por una restricción elástica. Al moverlos con el mouse, se comportan como si estuvieran conectados por un resorte.
+
+``` js
+let Engine = Matter.Engine,
+  World = Matter.World,
+  Bodies = Matter.Bodies,
+  Constraint = Matter.Constraint,
+  Mouse = Matter.Mouse,
+  MouseConstraint = Matter.MouseConstraint;
+
+let engine, world;
+let circleA, circleB, link, ground, mConstraint;
+let canvas;
+
+function setup() {
+  canvas = createCanvas(600, 400);
+
+  engine = Engine.create();
+  world = engine.world;
+
+  // Crear dos círculos con rebote
+  circleA = Bodies.circle(300, 100, 20, { restitution: 0.8 });
+  circleB = Bodies.circle(350, 150, 20, { restitution: 0.8 });
+
+  link = Constraint.create({
+    bodyA: circleA,
+    bodyB: circleB,
+    length: 100,
+    stiffness: 0.05,
+  });
 
 
+  ground = Bodies.rectangle(300, height - 10, width, 20, { isStatic: true });
+
+ 
+  World.add(world, [circleA, circleB, link, ground]);
+
+  const canvasMouse = Mouse.create(canvas.elt);
+  canvasMouse.pixelRatio = pixelDensity(); 
+  const options = { mouse: canvasMouse };
+  mConstraint = MouseConstraint.create(engine, options);
+  World.add(world, mConstraint);
+}
+
+function draw() {
+  background(20);
+  Engine.update(engine);
+
+  stroke(255);
+  strokeWeight(2);
+  line(
+    circleA.position.x,
+    circleA.position.y,
+    circleB.position.x,
+    circleB.position.y
+  );
+
+
+  noStroke();
+  fill(100, 200, 255);
+  ellipse(circleA.position.x, circleA.position.y, 40);
+  fill(255, 100, 100);
+  ellipse(circleB.position.x, circleB.position.y, 40);
+
+
+  fill(150);
+  rectMode(CENTER);
+  rect(ground.position.x, ground.position.y, width, 20);
+}
+```
+
+Gif: 
+
+https://github.com/user-attachments/assets/978a888e-670a-4fe2-903a-f7bf10308271
+
+
+Link: https://editor.p5js.org/nijesa/sketches/ru4eAHus-
+
+Dificultades: Meter la libreria fue ccomplicado pero solo me enredé, también noté que algunas variables del motor (como MouseConstraint) necesitan crearse después de que el canvas esté disponible, de lo contrario generan errores de referencia.
