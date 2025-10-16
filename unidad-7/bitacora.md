@@ -22,3 +22,74 @@ Esta me pareció muy interesante, ya que tuve que leerla varias veces para enten
 1. Foco: la idea es que las O (una o ambas) sean focos que se pueden prender o apagar haciendo click, emiten luz que ilumina el fondo negro y las letras vecinas (F & C)
 2. Pluma: La L se convierte en una pluma y la palabra va cayendo con un movimiento senoidal suave, que recuerda a como se cae una pluma
 3. Conectar: La palabra aparece separada desde la e, luego se conecta completando la e generando un pulso electrico por toda la plabra (de izquierda a derecha ó derecha a izquierda)
+
+## Actividad 2
+
+### Conceptos clave
+- Engine: Es el motor principal de física. Se encarga de calcular las fuerzas, colisiones y movimientos de los cuerpos en cada frame. Se actualiza continuamente en el bucle principal del programa.
+- World: Representa el “mundo” físico donde existen los objetos. Todos los cuerpos, restricciones y eventos se agregan al World para ser simulados por el Engine
+- Bodies: Son los objetos físicos dentro del mundo. Pueden tener distintas formas como rectángulos, círculos o polígonos. Cada cuerpo tiene propiedades como masa, fricción, rebote y posición.
+- Constraint: Es una “restricción” que une dos cuerpos (como una cuerda o resorte). Permite simular comportamientos como péndulos o uniones elásticas.
+- MouseConstraint: Permite interactuar con los cuerpos usando el mouse. Al hacer clic, se puede arrastrar o empujar los objetos en la simulación.
+
+
+### Ejercicio 1:
+
+Descripción: Creo un mundo donde varios objetos caen
+
+```js
+const { Engine, World, Bodies, Mouse, MouseConstraint } = Matter;
+
+let engine, world;
+let boxes = [];
+let ground;
+let mConstraint;
+let myCanvas; 
+
+function setup() {
+
+  myCanvas = createCanvas(600, 400);
+
+
+  engine = Engine.create();
+  world = engine.world;
+
+
+  for (let i = 0; i < 5; i++) {
+    boxes.push(
+      Bodies.circle(random(100, 500), random(0, 100), random(15, 30), {
+        restitution: 0.8,
+      })
+    );
+  }
+
+
+  ground = Bodies.rectangle(300, height - 20, 600, 40, { isStatic: true });
+  World.add(world, [...boxes, ground]);
+
+
+  const canvasMouse = Mouse.create(myCanvas.elt); // usamos myCanvas en lugar de canvas
+  const options = { mouse: canvasMouse };
+  mConstraint = MouseConstraint.create(engine, options);
+  World.add(world, mConstraint);
+}
+
+function draw() {
+  background(30);
+  Engine.update(engine);
+
+
+  fill(200);
+  noStroke();
+  for (let b of boxes) {
+    ellipse(b.position.x, b.position.y, b.circleRadius * 2);
+  }
+
+
+  fill(150);
+  rectMode(CENTER);
+  rect(ground.position.x, ground.position.y, 600, 40);
+}
+```
+
+
