@@ -213,3 +213,5 @@ Captura:
 
 
 [link](https://editor.p5js.org/nijesa/sketches/DvAlTgiwIs)
+
+## Autoevaluación: 5
